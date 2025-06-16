@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Calculator | HESHENG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-black: #1a1a1a;
+            --accent-gold: #d4af37;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --surface-primary: #111111;
+            --surface-secondary: #1e1e1e;
+            --surface-tertiary: #2a2a2a;
+            --border-subtle: #333333;
+            --border-focus: #d4af37;
+            --shadow-subtle: rgba(0, 0, 0, 0.3);
+            --shadow-elevated: rgba(0, 0, 0, 0.5);
+            --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--secondary-black) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            position: relative;
+        }
+
+        .header-section {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 2rem;
+        }
+
+        .brand-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gold), #b8941f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background: var(--surface-primary);
+        }
+
+        .logo-text {
+            position: relative;
+            z-index: 1;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+        }
+
+        .brand-name {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 1.5rem;
+            letter-spacing: 0.2em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .main-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 2rem;
+        }
+
+        .calculator-container {
+            background: var(--surface-primary);
+            border-radius: 24px;
+            padding: 3rem;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 20px 60px var(--shadow-elevated);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculator-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0.5;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .input-field, .select-field {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: var(--surface-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 400;
+            transition: all 0.3s var(--transition-smooth);
+            outline: none;
+            appearance: none;
+        }
+
+        .input-field:focus, .select-field:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+            background: var(--surface-tertiary);
+        }
+
+        .select-field {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a0a0a0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 3rem;
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .radio-option {
+            position: relative;
+        }
+
+        .radio-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            background: var(--surface-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .radio-input:checked + .radio-label {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--border-focus);
+            color: var(--accent-gold);
+        }
+
+        .radio-label:hover {
+            background: var(--surface-tertiary);
+            border-color: var(--text-muted);
+        }
+
+        .calculate-button {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            background: linear-gradient(135deg, var(--accent-gold), #b8941f);
+            border: none;
+            border-radius: 16px;
+            color: var(--primary-black);
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4);
+        }
+
+        .calculate-button:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--surface-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-content {
+            text-align: center;
+            width: 100%;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* 详细结果展示样式 */
+        .result-details-container {
+            display: grid;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            letter-spacing: 0.05em;
+        }
+
+        .parameters-section {
+            background: var(--surface-secondary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .parameters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .parameter-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--surface-tertiary);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .parameter-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .parameter-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .parameter-value.highlight {
+            color: var(--accent-gold);
+        }
+
+        .calculation-section {
+            background: var(--surface-secondary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .calculation-steps {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .calculation-step {
+            padding: 1rem;
+            background: var(--surface-tertiary);
+            border-radius: 8px;
+            border-left: 3px solid var(--text-muted);
+        }
+
+        .calculation-step.final-step {
+            border-left-color: var(--accent-gold);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .step-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-formula {
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+
+        .step-result {
+            color: var(--accent-gold);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .step-result.final-result {
+            font-size: 1.1rem;
+            color: var(--accent-gold);
+        }
+
+        .yield-section {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            text-align: center;
+        }
+
+        .yield-display {
+            margin-top: 1rem;
+        }
+
+        .yield-main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .yield-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .yield-unit {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .error-state {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        /* Advanced animations and micro-interactions */
+        .input-field:focus, .select-field:focus {
+            animation: focusPulse 0.3s ease-out;
+        }
+
+        @keyframes focusPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .calculate-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .calculate-button:hover::before {
+            left: 100%;
+        }
+
+        .result-container {
+            transition: all 0.5s var(--transition-smooth);
+        }
+
+        .result-container.calculating {
+            background: var(--surface-tertiary);
+            border-color: var(--accent-gold);
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-subtle);
+            border-top: 2px solid var(--accent-gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            animation: slideInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .input-group:nth-child(1) { animation-delay: 0.1s; }
+        .input-group:nth-child(2) { animation-delay: 0.2s; }
+        .input-group:nth-child(3) { animation-delay: 0.3s; }
+        .input-group:nth-child(4) { animation-delay: 0.4s; }
+        .input-group:nth-child(5) { animation-delay: 0.5s; }
+        .input-group:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Floating particles background effect */
+        .main-container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(212, 175, 55, 0.01) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .calculator-container {
+                padding: 2rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .radio-group {
+                grid-template-columns: 1fr;
+            }
+
+            .main-title {
+                font-size: 2.5rem;
+            }
+
+            .brand-mark {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .parameters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .parameter-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .step-formula {
+                font-size: 0.8rem;
+                word-break: break-all;
+            }
+
+            .yield-value {
+                font-size: 1.5rem;
+            }
+
+            .result-details-container {
+                gap: 1.5rem;
+            }
+
+            .parameters-section,
+            .calculation-section,
+            .yield-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header class="header-section">
+            <div class="brand-mark">
+                <div class="logo-container">
+                    <div class="logo-text">H</div>
+                </div>
+                <div class="brand-name">HESHENG</div>
+            </div>
+            <h1 class="main-title">精密计算器</h1>
+            <p class="subtitle">专业纽扣胶浆用量分析</p>
+        </header>
+
+        <main class="calculator-container">
+            <form class="form-grid" id="calculatorForm">
+                <div class="input-group">
+                    <label class="input-label" for="size">纽扣尺寸 (L)</label>
+                    <select id="size" class="select-field" required>
+                        <option value="">请选择纽扣尺寸</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="thickness">胚厚 (MM)</label>
+                    <select id="thickness" class="select-field" required>
+                        <option value="">请选择胚厚</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">计算模式</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="calculationMode" id="modeTotalQuantity" value="totalQuantity" class="radio-input" checked>
+                            <label for="modeTotalQuantity" class="radio-label">指定数量计算</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="calculationMode" id="modePerG" value="perG" class="radio-input">
+                            <label for="modePerG" class="radio-label">每G用量 (144颗)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group" id="quantityGroup">
+                    <label class="input-label" for="quantity">数量</label>
+                    <input type="number" id="quantity" class="input-field" placeholder="请输入数量" step="0.001">
+                </div>
+
+                <div class="input-group" id="unitGroup">
+                    <label class="input-label" for="quantityUnit">单位</label>
+                    <select id="quantityUnit" class="select-field">
+                        <option value="G">G (144颗)</option>
+                        <option value="GG">GG (1728颗)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">生产方式</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="productionMethod" id="prodSheet" value="sheet" class="radio-input" checked>
+                            <label for="prodSheet" class="radio-label">片材</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="productionMethod" id="prodRodFlower" value="rodFlower" class="radio-input">
+                            <label for="prodRodFlower" class="radio-label">棍花</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <div id="statusIndicator" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                    <div id="statusDot" style="width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted);"></div>
+                    <span id="statusText">准备计算</span>
+                </div>
+                <div style="flex: 1;"></div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Ctrl + Enter</div>
+            </div>
+
+            <button type="button" class="calculate-button" id="calculateButton">
+                计算胶浆用量
+            </button>
+
+            <div class="result-container" id="resultContainer">
+                <div class="result-content">
+                    <div class="result-value" id="resultValue">—</div>
+                    <div class="result-details" id="resultDetails">请输入参数以计算胶浆用量</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Coefficient data for different button sizes (L is assumed to be a linear unit, e.g., mm or a custom unit)
+        // These coefficients would typically represent the "base area" or some derived factor for a given button size.
+        // It's crucial that these coefficients are accurate to your specific material/button types.
+        const coefficients = {
+            12: 0.093, 13: 0.111, 14: 0.13, 15: 0.148,
+            16: 0.17, 17: 0.19, 18: 0.219, 19: 0.239,
+            20: 0.265, 21: 0.292, 22: 0.32, 23: 0.354,
+            24: 0.381, 26: 0.447, 28: 0.519, 30: 0.596,
+            32: 0.678, 34: 0.762, 36: 0.855, 38: 0.957,
+            40: 1.059, 42: 1.165, 44: 1.271, 48: 1.525,
+            50: 1.728, 52: 1.83, 54: 1.93, 60: 2.383
+        };
+
+        // Thickness values in millimeters
+        const thicknessValues = [
+            2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0,
+            4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.1, 6.2,
+            6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.8, 7.9, 8.0, 8.1, 8.2, 8.3, 8.4,
+            8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7
+        ].sort((a, b) => a - b);
+
+        // Constants for unit conversions
+        const G_TO_PIECES = 144; // 1 Gross (G) = 144 pieces
+        const GG_TO_PIECES = 1728; // 1 Great Gross (GG) = 1728 pieces (12 G)
+
+        // DOM elements references
+        const sizeSelect = document.getElementById('size');
+        const thicknessSelect = document.getElementById('thickness');
+        const quantityInput = document.getElementById('quantity');
+        const quantityUnitSelect = document.getElementById('quantityUnit');
+        const calculateButton = document.getElementById('calculateButton');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultValue = document.getElementById('resultValue');
+        const resultDetails = document.getElementById('resultDetails');
+        const quantityGroup = document.getElementById('quantityGroup');
+        const unitGroup = document.getElementById('unitGroup');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+
+        // Initialize the calculator when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            populateDropdowns(); // Fill the size and thickness dropdowns
+            bindEvents(); // Attach event listeners
+            toggleQuantityInputs(); // Set initial visibility of quantity inputs
+            validateInputs(); // Perform initial validation
+        });
+
+        // Populates the size and thickness dropdowns with data
+        function populateDropdowns() {
+            // Populate size dropdown
+            const sortedSizes = Object.keys(coefficients).map(Number).sort((a, b) => a - b);
+            sortedSizes.forEach(size => {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = `${size}L`;
+                sizeSelect.appendChild(option);
+            });
+
+            // Populate thickness dropdown
+            thicknessValues.forEach(thickness => {
+                const option = document.createElement('option');
+                option.value = thickness;
+                option.textContent = `${thickness} MM`;
+                thicknessSelect.appendChild(option);
+            });
+        }
+
+        // Binds event listeners to interactive elements
+        function bindEvents() {
+            calculateButton.addEventListener('click', calculateConsumption);
+
+            // Listen for changes in calculation mode (total quantity vs. per G)
+            document.querySelectorAll('input[name="calculationMode"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    toggleQuantityInputs();
+                    validateInputs(); // Re-validate inputs when mode changes
+                });
+            });
+
+            // Real-time validation on input/select changes
+            [sizeSelect, thicknessSelect, quantityInput, quantityUnitSelect].forEach(element => {
+                element.addEventListener('change', validateInputs);
+                if (element.type === 'number') {
+                    element.addEventListener('input', validateInputs); // For number inputs, also check on 'input' event
+                }
+            });
+            document.querySelectorAll('input[name="productionMethod"]').forEach(radio => {
+                radio.addEventListener('change', validateInputs);
+            });
+        }
+
+        // Toggles the visibility of the quantity input group based on the calculation mode
+        function toggleQuantityInputs() {
+            const mode = document.querySelector('input[name="calculationMode"]:checked').value;
+            const isPerG = mode === 'perG';
+
+            // If "perG" mode, hide quantity and unit inputs
+            quantityGroup.style.display = isPerG ? 'none' : 'block';
+            unitGroup.style.display = isPerG ? 'none' : 'block';
+
+            resetResult(); // Reset result display when mode changes
+        }
+
+        // Validates input fields and enables/disables the calculate button
+        function validateInputs() {
+            const size = parseFloat(sizeSelect.value);
+            const thickness = parseFloat(thicknessSelect.value);
+            const mode = document.querySelector('input[name="calculationMode"]:checked').value;
+            const quantity = parseFloat(quantityInput.value); // Will be NaN if quantity input is hidden/empty
+
+            let isValid = !isNaN(size) && !isNaN(thickness);
+
+            if (mode === 'totalQuantity') {
+                // For 'totalQuantity' mode, quantity must be a valid positive number
+                isValid = isValid && !isNaN(quantity) && quantity > 0;
+            }
+
+            // Enable/disable the calculate button based on validation
+            calculateButton.style.opacity = isValid ? '1' : '0.5';
+            calculateButton.style.pointerEvents = isValid ? 'auto' : 'none';
+
+            updateStatus(isValid); // Update the status indicator
+        }
+
+        // Updates the status dot and text based on validation
+        function updateStatus(isValid) {
+            if (isValid) {
+                statusDot.style.background = 'var(--accent-gold)';
+                statusText.textContent = '准备计算';
+                statusDot.style.animation = 'pulse 2s infinite';
+            } else {
+                statusDot.style.background = 'var(--text-muted)';
+                statusText.textContent = '请完善所有字段';
+                statusDot.style.animation = 'none';
+            }
+        }
+
+        /**
+         * Calculates a dynamic loss rate based on total pieces and production method.
+         * The loss rate for 'sheet' method decreases as total pieces increase,
+         * simulating better efficiency with larger batches.
+         * 'rodFlower' method has a fixed loss rate.
+         * @param {number} totalPieces - The total number of button pieces.
+         * @param {string} method - The production method ('sheet' or 'rodFlower').
+         * @returns {number} The calculated loss rate as a decimal.
+         */
+        function calculateDynamicLossRate(totalPieces, method) {
+            // Define loss rate ranges for each method
+            const lossRanges = {
+                sheet: { min: 0.15, max: 0.25 }, // Sheet method: higher loss for small batches, lower for large
+                rodFlower: { fixed: 0.05 }      // Rod flower method: fixed lower loss
+            };
+
+            // If production method is 'rodFlower', return fixed loss rate
+            if (method === 'rodFlower') {
+                return lossRanges.rodFlower.fixed;
+            }
+
+            // For 'sheet' method, calculate dynamic loss rate based on total pieces
+            const scalingMinPieces = 144 * 50;   // Threshold for highest loss rate (50 G)
+            const scalingMaxPieces = 144 * 5000; // Threshold for lowest loss rate (5000 G)
+
+            // If total pieces are below or at the minimum threshold, return max loss
+            if (totalPieces <= scalingMinPieces) return lossRanges.sheet.max;
+            // If total pieces are above or at the maximum threshold, return min loss
+            if (totalPieces >= scalingMaxPieces) return lossRanges.sheet.min;
+
+            // Calculate a linear interpolation of the loss rate between min and max pieces
+            const proportion = (totalPieces - scalingMinPieces) / (scalingMaxPieces - scalingMinPieces);
+            return lossRanges.sheet.max - (proportion * (lossRanges.sheet.max - lossRanges.sheet.min));
+        }
+
+        /**
+         * Performs the main consumption calculation.
+         * Fetches input values, applies formulas, and displays results or errors.
+         */
+        function calculateConsumption() {
+            // Show loading state immediately
+            showCalculating();
+
+            // Simulate a delay for a better user experience (e.g., if there were server-side calculations)
+            setTimeout(() => {
+                try {
+                    const size = parseFloat(sizeSelect.value);
+                    const thickness = parseFloat(thicknessSelect.value);
+                    const mode = document.querySelector('input[name="calculationMode"]:checked').value;
+                    const productionMethod = document.querySelector('input[name="productionMethod"]:checked').value;
+
+                    // Validate essential inputs
+                    if (isNaN(size) || !coefficients[size]) {
+                        throw new Error('请选择有效的纽扣尺寸 (L)');
+                    }
+                    if (isNaN(thickness)) {
+                        throw new Error('请选择有效的胚厚 (MM)');
+                    }
+
+                    let totalPieces = 0;
+                    let quantityText = '';
+
+                    // Determine total pieces based on calculation mode
+                    if (mode === 'perG') {
+                        totalPieces = G_TO_PIECES; // Calculate for 1 G (144 pieces)
+                        quantityText = '1 G (144 颗)';
+                    } else {
+                        const quantity = parseFloat(quantityInput.value);
+                        const unit = quantityUnitSelect.value;
+
+                        if (isNaN(quantity) || quantity <= 0) {
+                            throw new Error('请输入有效的数量');
+                        }
+
+                        // Convert quantity to total pieces
+                        totalPieces = unit === 'G' ? quantity * G_TO_PIECES : quantity * GG_TO_PIECES;
+                        quantityText = `${quantity} ${unit} (${totalPieces.toLocaleString()} 颗)`;
+                    }
+
+                    // Get the coefficient for the selected size (not directly used in the specific formula from screenshot, but kept for potential future use)
+                    // const sizeCoefficient = coefficients[size];
+
+                    // Calculate dynamic loss rate
+                    const lossRate = calculateDynamicLossRate(totalPieces, productionMethod);
+
+                    // --- Core Calculation Formulas ---
+                    // "国产算法（未含损耗）" from your screenshot: (size L × size L × thickness MM × pieces) ÷ 18000
+                    const rawMaterial = (size * size * thickness * totalPieces) / 18000;
+
+                    // Final consumption includes loss rate
+                    const finalConsumption = rawMaterial * (1 + lossRate);
+
+                    // Calculate yield per kg (pieces per kg of final consumption)
+                    // Yield: (Total pieces calculated for) / (Final consumption in kg)
+                    const piecesPerKg = totalPieces / finalConsumption;
+                    const gPerKg = piecesPerKg / G_TO_PIECES;
+
+
+                    // Display the results in the UI
+                    displayResult({
+                        consumption: finalConsumption,
+                        details: {
+                            size: `${size}L`,
+                            thickness: `${thickness} MM`,
+                            quantity: quantityText,
+                            method: productionMethod === 'sheet' ? '片材' : '棍花',
+                            mode: mode === 'perG' ? '每G用量 (144颗)' : '指定数量计算',
+                            lossRate: `${(lossRate * 100).toFixed(2)}%`, // Format to two decimal places for percentage
+                            rawMaterial: `${rawMaterial.toFixed(3)} kg`,
+                            // Updated formula string to precisely match the screenshot's "Domestic Algorithm"
+                            formula: `(${size}L × ${size}L × ${thickness}MM × ${totalPieces} 颗) ÷ 18000`,
+                            yield: `${gPerKg.toFixed(3)} G`,
+                            pieces: `${Math.round(piecesPerKg)}`
+                        }
+                    });
+
+                } catch (error) {
+                    displayError(error.message); // Show any errors caught during calculation
+                }
+            }, 800); // Simulate 0.8 second calculation time
+        }
+
+        // Displays the calculating/loading state in the result container
+        function showCalculating() {
+            resultContainer.classList.add('calculating');
+            resultValue.innerHTML = '<div class="loading-spinner"></div>'; // Show spinner
+            resultDetails.textContent = '正在计算最优用量...';
+            calculateButton.textContent = '计算中...';
+            calculateButton.style.pointerEvents = 'none'; // Disable button during calculation
+
+            statusDot.style.background = '#4CAF50'; // Green dot for processing
+            statusText.textContent = '处理中...';
+            statusDot.style.animation = 'spin 1s linear infinite';
+        }
+
+        /**
+         * Displays the calculation results in the UI.
+         * @param {Object} data - Object containing consumption and detailed parameters.
+         * @param {number} data.consumption - The final calculated consumption in kg.
+         * @param {Object} data.details - Detailed breakdown of inputs and intermediate results.
+         */
+        function displayResult(data) {
+            // Remove error/calculating states
+            resultContainer.classList.remove('error-state', 'calculating');
+            calculateButton.textContent = '计算胶浆用量'; // Reset button text
+            calculateButton.style.pointerEvents = 'auto'; // Re-enable button
+
+            // Reset status indicator
+            statusDot.style.background = '#4CAF50'; // Green dot for complete
+            statusText.textContent = '计算完成';
+            statusDot.style.animation = 'none';
+
+            // Animate the main result value
+            animateValue(resultValue, 0, data.consumption, 1000, 'kg');
+
+            // Populate the detailed result section
+            resultDetails.innerHTML = `
+                <div class="result-details-container fade-in">
+                    <!-- 主要参数区域 (Main Parameters Section) -->
+                    <div class="parameters-section">
+                        <h3 class="section-title">计算参数</h3>
+                        <div class="parameters-grid">
+                            <div class="parameter-item">
+                                <span class="parameter-label">纽扣尺寸：</span>
+                                <span class="parameter-value">${data.details.size}</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="parameter-label">胚厚：</span>
+                                <span class="parameter-value">${data.details.thickness}</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="parameter-label">生产方式：</span>
+                                <span class="parameter-value">${data.details.method}</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="parameter-label">计算模式：</span>
+                                <span class="parameter-value">${data.details.mode}</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="parameter-label">计算数量：</span>
+                                <span class="parameter-value">${data.details.quantity}</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="parameter-label">计算损耗率：</span>
+                                <span class="parameter-value highlight">${data.details.lossRate}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 计算过程区域 (Calculation Process Section) -->
+                    <div class="calculation-section">
+                        <h3 class="section-title">计算过程</h3>
+                        <div class="calculation-steps">
+                            <div class="calculation-step">
+                                <div class="step-label">国产算法（未含损耗）：</div>
+                                <div class="step-formula">${data.details.formula}</div>
+                                <div class="step-result">= ${data.details.rawMaterial}</div>
+                            </div>
+                            <div class="calculation-step final-step">
+                                <div class="step-label">最终计算（含损耗）：</div>
+                                <div class="step-formula">${data.details.rawMaterial} × (1 + ${(parseFloat(data.details.lossRate) / 100).toFixed(4)})</div>
+                                <div class="step-result final-result">= ${data.consumption.toFixed(3)} kg</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 产出效率区域 (Yield Efficiency Section) -->
+                    <div class="yield-section">
+                        <h3 class="section-title">每公斤胶浆产出</h3>
+                        <div class="yield-display">
+                            <div class="yield-main">
+                                <span class="yield-value">${data.details.yield}</span>
+                                <span class="yield-unit">或 ${data.details.pieces} 颗</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            resultContainer.classList.add('fade-in'); // Add fade-in animation
+        }
+
+        /**
+         * Displays an error message in the result container.
+         * @param {string} message - The error message to display.
+         */
+        function displayError(message) {
+            resultContainer.classList.remove('calculating'); // Remove calculating state
+            resultContainer.classList.add('error-state'); // Add error state styling
+            calculateButton.textContent = '计算胶浆用量'; // Reset button text
+            calculateButton.style.pointerEvents = 'auto'; // Re-enable button
+
+            // Reset status
+            statusDot.style.background = '#ff6b6b'; // Red dot for error
+            statusText.textContent = '计算失败';
+            statusDot.style.animation = 'none';
+
+            // Display error message
+            resultValue.textContent = '错误';
+            resultDetails.innerHTML = `
+                <div style="color: #ff6b6b; text-align: center; padding: 1rem;">
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">⚠️</div>
+                    <div>${message}</div>
+                </div>
+            `;
+            resultContainer.classList.add('fade-in'); // Add fade-in animation
+        }
+
+        // Resets the result display to its initial state
+        function resetResult() {
+            resultContainer.classList.remove('error-state', 'calculating');
+            resultValue.textContent = '—';
+            resultDetails.textContent = '请输入参数以计算胶浆用量';
+            statusDot.style.background = 'var(--text-muted)';
+            statusText.textContent = '准备计算';
+            statusDot.style.animation = 'none';
+        }
+
+        /**
+         * Animates a numerical value smoothly.
+         * @param {HTMLElement} element - The DOM element to update.
+         * @param {number} start - The starting value.
+         * @param {number} end - The ending value.
+         * @param {number} duration - The duration of the animation in milliseconds.
+         * @param {string} suffix - Optional suffix to append to the value (e.g., 'kg').
+         */
+        function animateValue(element, start, end, duration, suffix = '') {
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing function for smooth animation (easeOutCubic)
+                const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                const current = start + (end - start) * easeOutCubic;
+
+                element.textContent = `${current.toFixed(3)} ${suffix}`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // Add keyboard shortcut for calculation (Ctrl + Enter)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault(); // Prevent default Enter key behavior (e.g., form submission)
+                calculateConsumption();
+            }
+        });
+
+        // Add input formatting: change text color for valid number inputs
+        quantityInput.addEventListener('input', function(e) {
+            const value = e.target.value;
+            if (value && !isNaN(value)) {
+                e.target.style.color = 'var(--accent-gold)';
+            } else {
+                e.target.style.color = 'var(--text-primary)';
+            }
+        });
+    </script>
+</body>
+</html>
